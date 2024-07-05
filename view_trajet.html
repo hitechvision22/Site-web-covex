@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Trajets</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+ <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #02356A;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .ticket {
+            max-width: 500px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa, #e2e6ea);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            animation: bounce 1s ease infinite alternate;
+        }
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .ticket-header h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .ticket-header p {
+            color: #777;
+        }
+        .ticket-content {
+            margin-top: 20px;
+        }
+        .ticket-content div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .ticket-content div img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        .ticket-content div span.label {
+            font-weight: 500;
+            color: #333;
+            min-width: 120px;
+            display: inline-block;
+            text-align: right;
+            margin-right: 15px;
+        }
+        .ticket-content div span.value {
+            color: #007bff;
+            font-weight: 700;
+            flex-grow: 1;
+        }
+        .ticket-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+        .ticket-footer img {
+            width: 80px;
+            margin: 0 auto;
+            animation: rotate 3s linear infinite;
+        }
+        .ticket-footer p {
+            font-size: 0.9em;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+</style>
+</head>
+<body>
+    <div class="container" id="trajetsContainer">
+        <!-- Les cartes de trajet seront ajoutées ici dynamiquement -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérifier si le token JWT est présent dans le localStorage
+        const token = localStorage.getItem('jwtToken');
+
+        if (!token) {
+            // Rediriger vers la page de connexion si le token n'est pas présent
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Fonction pour récupérer et afficher les trajets de l'utilisateur
+        function fetchAndDisplayTrajets() {
+            axios.get('https://api.covoiturageexpress.com/api/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                const trajets = response.data.trajets; // Assurez-vous que la structure de réponse correspond à votre API
+
+                const trajetsContainer = document.getElementById('trajetsContainer');
+                trajetsContainer.innerHTML = ''; // Efface le contenu précédent
+
+                trajets.forEach(trajet => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+
+                    const icon = document.createElement('span');
+                    icon.classList.add('card-icon');
+                    icon.textContent = '🚗';
+
+                    const content = document.createElement('div');
+                    content.classList.add('card-content');
+                    content.innerHTML = `
+                        <p><strong>Date de départ:</strong> ${trajet.date_depart}</p>
+                        <p><strong>Lieu de départ:</strong> ${trajet.ville_depart}</p>
+                        <p><strong>Point de départ:</strong> ${trajet.point_rencontre}</p>
+                        <p><strong>Lieu d'arrivée:</strong> ${trajet.ville_destination}</p>
+                        <p><strong>Point d'arrivée:</strong> ${trajet.point_destination}</p>
+                        <p><strong>Heure de départ:</strong> ${trajet.heure_depart}</p>
+                        <p><strong>Nombre de places disponibles:</strong> ${trajet.nombre_place_disponible}</p>
+                        <p><strong>Prix:</strong> ${trajet.prix} FCFA</p>
+                    `;
+
+                    card.appendChild(icon);
+                    card.appendChild(content);
+                    trajetsContainer.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des trajets:', error);
+                alert('Erreur lors de la récupération des trajets.');
+            });
+        }
+
+        // Appeler la fonction pour récupérer et afficher les trajets lors du chargement de la page
+        fetchAndDisplayTrajets();
+    });
+</script>
+<script>
+    
+    if(
+      localStorage.getItem('jwtToken') 
+    )
+    {
+      document.getElementById('Btnconnexion').style.display = 'none';
+    }
+</boby>
+<html>

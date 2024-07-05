@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tous les Trajets</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+}
+.card {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: scale(1.05);
+}
+.btn-reserver {
+    background-color: orange;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+.btn-reserver:hover {
+    background-color: darkorange;
+}
+    </style>
+</head>
+<body>
+
+
+    <div class="container" id="tripList">
+        <!-- Les cartes de trajet seront ajoutées ici dynamiquement -->
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tripList = document.getElementById('tripList');
+
+            function fetchAndDisplayTrips() {
+                fetch('https://api.covoiturageexpress.com/api/trajet')
+                    .then(response => response.json())
+                    .then(data => {
+                        const trips = data.data;
+
+                        tripList.innerHTML = ''; // Efface le contenu précédent
+
+                        trips.forEach(trip => {
+                            const tripCard = createTripCard(trip);
+                            tripList.appendChild(tripCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération des trajets:', error);
+                        alert('Erreur lors de la récupération des trajets.');
+                    });
+            }
+
+            function createTripCard(trip) {
+                const tripCard = document.createElement('div');
+                tripCard.classList.add('card');
+
+                tripCard.innerHTML = `
+                    <p><strong>Ville de départ:</strong> ${trip.ville_depart}</p>
+                    <p><strong>Ville d'arrivée:</strong> ${trip.ville_destination}</p>
+                    <p><strong>Point de rencontre:</strong> ${trip.point_rencontre}</p>
+                    <p><strong>Point d'arrivée:</strong> ${trip.point_destination}</p>
+                    <p><strong>Date de départ:</strong> ${trip.date_depart}</p>
+                    <p><strong>Heure de départ:</strong> ${trip.heure_depart}</p>
+                    <p><strong>Prix:</strong> ${trip.prix} FCFA</p>
+                    <p><strong>Places disponibles:</strong> ${trip.nombre_de_place_disponible} / ${trip.Nombre_de_place}</p>
+                    <p><strong>Mode de paiement:</strong> ${trip.Mode_de_paiement}</p>
+                    <p><strong>Bagages:</strong> ${trip.bagage == 1 ? 'Oui' : 'Non'}</p>
+                    <button class="btn-reserver" onclick="reserveTrip(${trip.id})">Réserver</button>
+                `;
+
+                tripCard.addEventListener('click', () => {
+                    // Logique pour rendre les cartes cliquables
+                    alert(`Trajet de ${trip.ville_depart} à ${trip.ville_destination}`);
+                });
+
+                return tripCard;
+            }
+
+            function reserveTrip(tripId) {
+                // Logique pour le bouton de réservation
+                alert(`Réservation pour le trajet ID: ${tripId}`);
+            }
+
+            fetchAndDisplayTrips();
+        });
+    </script>
+</body>
+</html>
